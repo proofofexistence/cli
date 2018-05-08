@@ -2,6 +2,8 @@
 var fs = require('fs')
 var minimist = require('minimist')
 var crypto = require('crypto')
+var colors = require('colors/safe')
+const btcConvert = require('bitcoin-convert')
 
 var APIClient = require('./client')
 const logger = require('./logger')
@@ -23,15 +25,19 @@ var argv = minimist(process.argv, {
   boolean: ['version', 'help', 'verbose']
 })
 
-var filename = argv._[2]
-var url = `${argv.host}${argv.port ? ":" + argv.port : ''}`
+
+const version = require('./package').version
+const filename = argv._[2]
+const url = `${argv.host}${argv.port ? ":" + argv.port : ''}`
 
 if (argv.verbose) {
     logger.level('debug')
 }
 
+console.log(colors.white("Proof of Existence - Verify your documents"))
+
 if (argv.version) {
-  console.log(require('../package').version)
+  console.log(version)
   process.exit(0)
 }
 
@@ -56,9 +62,10 @@ var shasum = crypto.createHash(algo);
 if (filename === '-' || !filename) {
   input = process.stdin
 } else if (fs.existsSync(filename)) {
+  console.error(colors.gray('Hashing content from file: %s'), filename)
   input = fs.createReadStream(filename)
 } else {
-  console.error('File: %s does not exist', filename)
+  console.error(colors.red('Sorry, file: %s does not exist'), filename)
   process.exit(2)
 }
 
@@ -68,9 +75,10 @@ input.on('data', function(chunk) {
   shasum.update(chunk)
 })
 input.on('end', function() {
-  var d = shasum.digest('hex');
-  console.log("sha256 : "+d)
-  register(d)
+  const hash = shasum.digest('hex');
+  console.log(colors.green("Hash OK (sha256)"))
+  logger.debug(hash)
+  register(hash)
 })
 
 function isValidSHA256(sha256) {
@@ -83,9 +91,11 @@ var api = new APIClient({baseUrl:url});
 
 function register(sha256) {
   if (!isValidSHA256(sha256)) {
-    console.log('Please pass a valid hash.')
+    console.log(colors.red('Please pass a valid hash.'))
     process.exit(0)
   }
+
+  console.log(colors.gray(`Connection to ${url}...\n`))
 
   api.register(sha256,
     resp => {
@@ -96,9 +106,12 @@ function register(sha256) {
           pay_address,
           price
         } = resp
+        // resp => showStatus(resp)
 
         console.log(
-          `Payment awaiting... ${price} mBTC to ${pay_address}`
+          colors.yellow(
+            `Payment awaiting... ${price} mBTC to ${pay_address}`
+          )
         )
       } else if (success === false && reason === 'existing') { // record already exist in local DB
 
@@ -129,10 +142,15 @@ function showStatus(resp) {
     status
   } = resp
 
+  const mBTCPrice = btcConvert(price, 'Satoshi', 'mBTC')
+
   switch (status) {
     case "paymentRequired":
       console.log(
-         `Payment awaiting... ${price} mBTC to ${payment_address}`
+         colors.yellow(
+           `Payment awaiting... \nPlease send ${mBTCPrice} mBTC to ${payment_address}
+           `
+         )
        )
       break;
     case "confirming":
