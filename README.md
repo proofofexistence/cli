@@ -41,6 +41,11 @@ Use your local instance running at http://localhost:3003
 proofx myfile -h http://localhost -p 3003
 ```
 
+Show logs
+```
+$ proofx -V
+```
+
 See the version number
 ```
 proofx --version
