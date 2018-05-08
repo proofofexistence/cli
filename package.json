@@ -22,7 +22,9 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
+    "bitcoin-convert": "^1.0.4",
     "bunyan": "^1.8.12",
+    "colors": "^1.2.4",
     "crypto-js": "^3.1.9-1",
     "minimist": "^1.2.0"
   }
