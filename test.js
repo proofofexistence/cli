@@ -18,3 +18,19 @@ describe('Validate Hash', function() {
     assert.equal(utils.isValidSHA256(validHash.toUpperCase()), true);
   });
 });
+
+describe('Hash Stream', function() {
+  it('should reliably hash a file stream', function(){
+    var mockedStream = new require('stream').Readable();
+    mockedStream._read = function(size) { /* do nothing */ };
+
+    utils.hashFile(mockedStream, function(hash){
+      assert.equal(utils.isValidSHA256(hash), true)
+      assert.equal(hash, "2609c7c28788898a337c063ff1c3b92275832bddeda014a790d109fad3ba85e2")
+    })
+
+    mockedStream.emit('data', 'simple text');
+    mockedStream.emit('end');
+  })
+
+})
