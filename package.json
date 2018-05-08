@@ -1,13 +1,12 @@
 {
   "name": "proofofexistence-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI util for Proof of Existence",
   "main": "index.js",
   "homepage": "https://github.com/proofofexistence/proofofexistence-cli",
-  "issues":
-  {
-    "url" : "https://github.com/proofofexistence/proofofexistence-cli/issues",
-    "email" : "project@hostname.com"
+  "issues": {
+    "url": "https://github.com/proofofexistence/proofofexistence-cli/issues",
+    "email": "project@hostname.com"
   },
   "scripts": {
     "test": "mocha"
@@ -25,8 +24,8 @@
     "proofx"
   ],
   "author": {
-    "name" : "Clément Renaud"
-    , "email" : "clement@poex.io"
+    "name": "Clément Renaud",
+    "email": "clement@poex.io"
   },
   "license": "MIT",
   "dependencies": {
