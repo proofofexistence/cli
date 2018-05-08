@@ -3,9 +3,9 @@
   "version": "1.0.2",
   "description": "CLI util for Proof of Existence",
   "main": "index.js",
-  "homepage": "https://github.com/proofofexistence/proofofexistence-cli",
+  "homepage": "https://github.com/proofofexistence/cli",
   "issues": {
-    "url": "https://github.com/proofofexistence/proofofexistence-cli/issues"
+    "url": "https://github.com/proofofexistence/cli/issues"
   },
   "scripts": {
     "test": "mocha"
