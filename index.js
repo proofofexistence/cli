@@ -37,7 +37,7 @@ if (argv.verbose) {
     logger.level('debug')
 }
 
-console.log(colors.white("Proof of Existence - Verify your documents"))
+console.log(colors.blue("Proof of Existence - Verify your documents"))
 
 if (argv.version) {
   console.log(version)
