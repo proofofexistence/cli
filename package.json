@@ -1,5 +1,5 @@
 {
-  "name": "proofofexistence-cli",
+  "name": "@proofofexistence/proofofexistence-cli",
   "version": "1.0.1",
   "description": "CLI util for Proof of Existence",
   "main": "index.js",
