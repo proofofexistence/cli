@@ -26,7 +26,12 @@ Register a file
 $ proofx myfile
 ```
 
-Pipe fron STD
+Check an existing hash
+```
+proofx fa3646680587863650b75be0adc4c8aa9ba2c2b84100331b77b1b125272cf9a6
+```
+
+Pipe file from stdin
 ```
 $ cat myfile | proofx
 ```

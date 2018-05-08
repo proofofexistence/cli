@@ -4,7 +4,7 @@
   "description": "CLI util for Proof of Existence",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "bin": {
     "proofx": "index.js"
@@ -27,5 +27,8 @@
     "colors": "^1.2.4",
     "crypto-js": "^3.1.9-1",
     "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.1.1"
   }
 }

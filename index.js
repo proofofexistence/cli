@@ -1,11 +1,12 @@
 #!/usr/bin/env node --harmony
 var fs = require('fs')
 var minimist = require('minimist')
-var crypto = require('crypto')
 var colors = require('colors/safe')
+
 const btcConvert = require('bitcoin-convert')
 
-var APIClient = require('./client')
+const utils = require('./utils')
+const APIClient = require('./client')
 const logger = require('./logger')
 
 var argv = minimist(process.argv, {
@@ -28,6 +29,9 @@ var argv = minimist(process.argv, {
 const version = require('./package').version
 const filename = argv._[2]
 const url = `${argv.host}${argv.port ? ":" + argv.port : ''}`
+
+// connect to API
+var api = new APIClient({baseUrl:url});
 
 if (argv.verbose) {
     logger.level('debug')
@@ -52,47 +56,30 @@ if (argv.help || (process.stdin.isTTY && !filename)) {
   process.exit(1)
 }
 
-// get data from file or pipe
-var input
-var algo = 'sha256';
-var shasum = crypto.createHash(algo);
-
-if (filename === '-' || !filename) {
-  input = process.stdin
-} else if (fs.existsSync(filename)) {
-  console.error(colors.gray('Hashing content from file: %s'), filename)
-  input = fs.createReadStream(filename)
-} else {
+// check if is a hash
+if (utils.isValidSHA256(filename)) { // read existing hash
+  console.log(colors.gray("Recognized an existing hash (sha256)"))
+  register(filename)
+} else if (filename === '-' || !filename) { // read from stdin
+  utils.hashFile(process.stdin, function(hash) {
+    register(hash);
+  })
+} else if (fs.existsSync(filename)) { // read data from file
+  utils.hashFile(fs.createReadStream(filename), function(hash) {
+    register(hash);
+  })
+} else { // error
   console.error(colors.red('Sorry, file: %s does not exist'), filename)
   process.exit(2)
 }
 
-var data = ''
-input.on('data', function(chunk) {
-  data += chunk;
-  shasum.update(chunk)
-})
-input.on('end', function() {
-  const hash = shasum.digest('hex');
-  console.log(colors.green("Hash OK (sha256)"))
-  logger.debug(hash)
-  register(hash)
-})
-
-function isValidSHA256(sha256) {
-  var re = /\b[A-Fa-f0-9]{64}\b/
-  return re.test(sha256)
-}
-
-// connect to API
-var api = new APIClient({baseUrl:url});
-
 function register(sha256) {
-  if (!isValidSHA256(sha256)) {
-    console.log(colors.red('Please pass a valid hash.'))
+  if (!utils.isValidSHA256(sha256)) {
+    console.error(colors.red('Please pass a valid hash.'))
     process.exit(0)
   }
 
+  logger.debug(sha256)
   console.log(colors.gray(`Connection to ${url}...\n`))
 
   api.register(sha256,
@@ -106,7 +93,7 @@ function register(sha256) {
         } = resp
 
         console.log(
-          colors.green('New file registered!')
+          colors.green('New document registered!')
         )
 
         showStatus(
@@ -121,7 +108,7 @@ function register(sha256) {
       } else if (success === false && reason === 'existing') { // record already exist in local DB
 
         console.log(
-          colors.yellow('This file exists in our registery\n')
+          colors.yellow('This document exists in our registery\n')
         )
 
         // update by default
@@ -167,7 +154,9 @@ function showStatus(resp) {
       break;
     case "confirmed":
       console.log(
-         `This document is already confirmed. The transaction id is ${tx} in the block ${blockstamp}.`
+        colors.green('The existence of this document is already confirmed.\n')
+        +
+        `The transaction id is ${colors.green(tx)} in the block ${blockstamp}.`
        )
       break;
     default:
