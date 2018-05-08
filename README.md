@@ -13,6 +13,12 @@ Usage: proofx [filename] [options]
   --help              Show this help
 ```
 
+### Install
+
+```
+npm -g install proofofexistence-cli
+```
+
 ### Usage examples
 
 Register a file
@@ -20,7 +26,7 @@ Register a file
 $ proofx myfile
 ```
 
-Pipe fron STD 
+Pipe fron STD
 ```
 $ cat myfile | proofx
 ```
@@ -34,5 +40,3 @@ See the version number
 ```
 proofx --version
 ```
-
-
