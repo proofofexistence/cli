@@ -15,11 +15,11 @@ var argv = minimist(process.argv, {
     h: 'host',
     p: 'port',
     n: 'network',
-    vv: 'verbose'
+    V: 'verbose'
   },
   default: {
     p: null,
-    h: 'http://proofofexistence.com',
+    h: 'https://proofofexistence.com',
     n: 'testnet'
   },
   boolean: ['version', 'help', 'verbose']
@@ -49,7 +49,7 @@ if (argv.help || (process.stdin.isTTY && !filename)) {
     'Usage: proofx [filename] [options]\n\n' +
     '  --host,-h           URL of the proofx instance\n' +
     '  --port,-p           Port where proofx is running\n' +
-    '  --verbose,-vv       Print out more logs\n' +
+    '  --verbose,-V       Print out more logs\n' +
     '  --version,-v        Print out the installed version\n' +
     '  --help              Show this help\n'
   )
