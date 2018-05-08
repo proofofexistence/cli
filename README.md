@@ -16,7 +16,7 @@ Usage: proofx [filename] [options]
 ### Install
 
 ```
-npm -g install proofofexistence-cli
+npm -g install @proofofexistence/cli
 ```
 
 ### Usage examples
