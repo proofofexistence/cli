@@ -63,7 +63,7 @@ module.exports = class APIClient {
   }
 
   post (url, data, callback, errorCallback) {
-    logger.debug('POST : ' + url)
+    logger.debug('POST : ' + url + JSON.stringify(data))
     // logger.debug(data);
     axios.post(url, data)
       .then(res => {
