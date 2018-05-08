@@ -1,5 +1,5 @@
 {
-  "name": "proofx-cli",
+  "name": "proofofexistence-cli",
   "version": "1.0.0",
   "description": "CLI util for Proof of Existence",
   "main": "index.js",
