@@ -1,5 +1,7 @@
 # Proof of Existence CLI
 
+[![npm version](https://badge.fury.io/js/%40proofofexistence%2Fcli.svg)](https://badge.fury.io/js/%40proofofexistence%2Fcli)
+
 A simple way to register your documents on the BTC blockchain using [http://proofofexistence.com](http://proofofexistence.com).
 
 ```
