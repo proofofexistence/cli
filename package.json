@@ -1,0 +1,29 @@
+{
+  "name": "proofx-cli",
+  "version": "1.0.0",
+  "description": "CLI util for Proof of Existence",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "proofx": "index.js"
+  },
+  "keywords": [
+    "Proof",
+    "of",
+    "Existence",
+    "blockchain",
+    "btc",
+    "bitcoin",
+    "proofx"
+  ],
+  "author": "clement@poex.io",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bunyan": "^1.8.12",
+    "crypto-js": "^3.1.9-1",
+    "minimist": "^1.2.0"
+  }
+}
