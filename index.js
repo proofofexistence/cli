@@ -106,24 +106,30 @@ function register(sha256) {
           pay_address,
           price
         } = resp
-        // resp => showStatus(resp)
 
         console.log(
-          colors.yellow(
-            `Payment awaiting... ${price} mBTC to ${pay_address}`
-          )
+          colors.green('New file registered!')
         )
+
+        showStatus(
+          Object.assign({},
+            resp,
+            {
+              status: "paymentRequired",
+              payment_address: pay_address
+            }
+          ))
+
       } else if (success === false && reason === 'existing') { // record already exist in local DB
 
-        if (argv.update) {
-          api.updateStatus(sha256,
-            resp => showStatus(resp)
-          )
-        } else {
-          api.getStatus(sha256,
-            resp => showStatus(resp)
-          )
-        }
+        console.log(
+          colors.yellow('This file exists in our registery\n')
+        )
+
+        // update by default
+        api.updateStatus(sha256,
+          resp => showStatus(resp)
+        )
 
       }
     },
@@ -147,15 +153,18 @@ function showStatus(resp) {
   switch (status) {
     case "paymentRequired":
       console.log(
-         colors.yellow(
-           `Payment awaiting... \nPlease send ${mBTCPrice} mBTC to ${payment_address}
+           `Please pay the fee for the certification to continue\nSend ${colors.green(mBTCPrice+ ' mBTC')} to ${colors.green(payment_address)}
            `
-         )
        )
       break;
     case "confirming":
       console.log(
-         `A transaction has been succesfully recorded. Now waiting for the block to confirmed. You can check the transaction id at ${tx}.`
+        colors.green(
+          `Congrats! The transaction has been succesfully recorded.\n`
+        )
+        +
+        `\nNow we just need to wait for the block to be confirmed by the miners.\nYour transaction id is ${colors.green(tx)}.\nCheck progresses at http://insight.proofofexistence.com/tx/${tx}`
+
        )
       break;
     case "confirmed":
