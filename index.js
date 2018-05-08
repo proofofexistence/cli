@@ -14,8 +14,7 @@ var argv = minimist(process.argv, {
     h: 'host',
     p: 'port',
     n: 'network',
-    vv: 'verbose',
-    u: 'update'
+    vv: 'verbose'
   },
   default: {
     p: null,
@@ -44,7 +43,6 @@ if (argv.version) {
 if (argv.help || (process.stdin.isTTY && !filename)) {
   console.error(
     'Usage: proofx [filename] [options]\n\n' +
-    '  --update,-u         Fetch latest status from the blockchain\n' +
     '  --host,-h           URL of the proofx instance\n' +
     '  --port,-p           Port where proofx is running\n' +
     '  --verbose,-vv       Print out more logs\n' +
