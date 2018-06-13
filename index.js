@@ -88,31 +88,19 @@ function register(sha256) {
   logger.debug(sha256)
   console.log(colors.gray(`Connection to ${url}...\n`))
 
-  // var api = new APIClient();
-
-  api.register(sha256, {baseUrl:url})
+  api.register(sha256, {baseURL : url})
     .then(resp => {
-      const {success, reason} = resp.data
+      const { success, reason } = resp.data
+      // console.log(sha256, resp.data);
       if (success) { // new record
-        const {
-          pay_address,
-          price
-        } = resp
 
         console.log(
           colors.green('New document registered!')
         )
 
-        api.getStatus(hash, { baseURL: null })
-          .then(statusResp =>
-            Object.assign({}, statusResp.data,
-              {
-                status: "paymentRequired",
-                payment_address: pay_address
-              }
-            )
-          )
-          .catch(error => console.log(error))
+        api.updateStatus(sha256, { baseURL: url })
+          .then(statusResp => showStatus(statusResp.data))
+          .catch(error => showError(error))
 
       } else if (success === false && reason === 'existing') { // record already exist in local DB
 
@@ -121,17 +109,29 @@ function register(sha256) {
         )
 
         // update by default
-        api.updateStatus(sha256, { baseURL: url })
-        .then(resp => showStatus(resp.data) )
-        .catch(error => console.log(error))
+        api.getStatus(sha256, { baseURL: url })
+          .then(resp => showStatus(resp.data) )
+          .catch(error => showError(error))
       }
     })
-    .catch(error => console.log(error) )
+    .catch(error => showError(error) )
 }
 
+/*
+ * Human-readable errors on the screen
+ *
+ */
+function showError(error) {
+  console.log(error.status, error.statusText)
+}
+
+/*
+ * Display human-readable information on the screen
+ *
+ */
 function showStatus(resp) {
+
   const status = getDocStatus(resp)
-  console.log(status);
 
   const {
     payment_address,
