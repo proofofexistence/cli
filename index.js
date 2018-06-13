@@ -6,7 +6,7 @@ var colors = require('colors/safe')
 const btcConvert = require('bitcoin-convert')
 
 const utils = require('./utils')
-const APIClient = require('./client')
+const api = require('@proofofexistence/api-client')
 const logger = require('./logger')
 
 var argv = minimist(process.argv, {
@@ -25,13 +25,9 @@ var argv = minimist(process.argv, {
   boolean: ['version', 'help', 'verbose']
 })
 
-
 const version = require('./package').version
 const filename = argv._[2]
 const url = `${argv.host}${argv.port ? ":" + argv.port : ''}`
-
-// connect to API
-var api = new APIClient({baseUrl:url});
 
 if (argv.verbose) {
     logger.level('debug')
@@ -49,7 +45,7 @@ if (argv.help || (process.stdin.isTTY && !filename)) {
     'Usage: proofx [filename] [options]\n\n' +
     '  --host,-h           URL of the proofx instance\n' +
     '  --port,-p           Port where proofx is running\n' +
-    '  --verbose,-V       Print out more logs\n' +
+    '  --verbose,-V        Print out more logs\n' +
     '  --version,-v        Print out the installed version\n' +
     '  --help              Show this help\n'
   )
@@ -73,6 +69,16 @@ if (utils.isValidSHA256(filename)) { // read existing hash
   process.exit(2)
 }
 
+function getDocStatus (status) {
+  if (status.pending === true && !status.txstamp) {
+    return 'paymentRequired'
+  } else if (status.txstamp && !status.blockstamp) {
+    return 'confirming'
+  } else if (status.blockstamp) {
+    return 'confirmed'
+  }
+}
+
 function register(sha256) {
   if (!utils.isValidSHA256(sha256)) {
     console.error(colors.red('Please pass a valid hash.'))
@@ -82,28 +88,19 @@ function register(sha256) {
   logger.debug(sha256)
   console.log(colors.gray(`Connection to ${url}...\n`))
 
-  api.register(sha256,
-    resp => {
-      const {success, reason} = resp
-
+  api.register(sha256, {baseURL : url})
+    .then(resp => {
+      const { success, reason } = resp.data
+      // console.log(sha256, resp.data);
       if (success) { // new record
-        const {
-          pay_address,
-          price
-        } = resp
 
         console.log(
           colors.green('New document registered!')
         )
 
-        showStatus(
-          Object.assign({},
-            resp,
-            {
-              status: "paymentRequired",
-              payment_address: pay_address
-            }
-          ))
+        api.updateStatus(sha256, { baseURL: url })
+          .then(statusResp => showStatus(statusResp.data))
+          .catch(error => showError(error))
 
       } else if (success === false && reason === 'existing') { // record already exist in local DB
 
@@ -112,17 +109,30 @@ function register(sha256) {
         )
 
         // update by default
-        api.updateStatus(sha256,
-          resp => showStatus(resp)
-        )
-
+        api.getStatus(sha256, { baseURL: url })
+          .then(resp => showStatus(resp.data) )
+          .catch(error => showError(error))
       }
-    },
-    err => console.log(err)
-  )
+    })
+    .catch(error => showError(error) )
 }
 
+/*
+ * Human-readable errors on the screen
+ *
+ */
+function showError(error) {
+  console.log(error.status, error.statusText)
+}
+
+/*
+ * Display human-readable information on the screen
+ *
+ */
 function showStatus(resp) {
+
+  const status = getDocStatus(resp)
+
   const {
     payment_address,
     price,
@@ -130,8 +140,8 @@ function showStatus(resp) {
     tx,
     txstamp,
     blockstamp,
-    status
   } = resp
+
 
   const mBTCPrice = btcConvert(price, 'Satoshi', 'mBTC')
 
