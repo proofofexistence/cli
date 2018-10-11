@@ -158,7 +158,7 @@ function showStatus(resp) {
           `Congrats! The transaction has been succesfully recorded.\n`
         )
         +
-        `\nNow we just need to wait for the block to be confirmed by the miners.\nYour transaction id is ${colors.green(tx)}.\nCheck progresses at http://insight.proofofexistence.com/tx/${tx}`
+        `\nNow we just need to wait for the block to be confirmed by the miners.\nYour transaction id is ${colors.green(tx)}.\nCheck progresses at http://insight.bitpay.com/tx/${tx}`
 
        )
       break;
